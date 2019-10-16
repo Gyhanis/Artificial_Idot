@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+from util import Stack
 
 class SearchProblem:
     """
@@ -81,13 +82,50 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
+    
     print "Start:", problem.getStartState()
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    curPos = problem.getStartState()
+    ActionList = []
+    closeList = [curPos]
+    stack = Stack()
+    successors = problem.getSuccessors(curPos)
+    step = 0
+    for successor in successors:
+        stack.push(successor[0:2]+(step,))
+        closeList.append(successor[0])
+    if 0:
+        curPos,action,step = stack.pop()
+        step += 1
+        ActionList.append(action)
+        if curPos not in closeList:
+            pass
+        curPos,action,step = stack.pop()
+        ActionList.append(action)
+        print ActionList[0:0]
+        ActionList = ActionList + [action]
+        print ActionList.pop()
+        print ActionList.pop()
+        print len(ActionList)
+        print "closeList:",closeList
+    else:
+        while not problem.isGoalState(curPos):
+            if stack.isEmpty():
+                return []
+            curPos,action,step = stack.pop()
+            if step == len(ActionList):
+                ActionList.append(action)
+            else:
+                ActionList = ActionList[0:step] + [action]
+            step += 1
+            successors = problem.getSuccessors(curPos)
+            for successor in successors:
+                if successor[0] not in closeList:
+                    stack.push(successor[0:2]+(step,))
+                    closeList.append(successor[0])
+    return ActionList
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""

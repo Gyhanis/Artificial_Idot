@@ -1,0 +1,27 @@
+注： ***X X X*** 表示强调XXX
+添加算法只需在search.py下对应的函数（如def breadthFirstSearch(problem):）中添加代码
+添加完后不要忘记删除最后的util.raiseNotDefined()
+函数参数problem说明：
+  默认为class PositionSearchProblem(search.SearchProblem)的实例（在searchAgent.py中定义)
+  使用方法：
+    problem.getStartState()
+      参数：无
+      返回值：2元tuple,pacman初始坐标(x,y)
+    problem.isGoalState(state)
+      参数：一个2元tuple，state，表示一个坐标
+      返回值：bool，如果参数是目的坐标（有食物），返回true，否则为false
+    problem.getSuccessors(state)
+      参数：一个2元tuple，state，表示一个坐标
+      返回值：一个元素为3元tuple的 ***列 表*** ，其中 ***三 元 tuple*** 的元素分别为
+        0号元素：一个2元tuple，表示与输入state的坐标 ***相 邻*** 的非墙（可达）坐标
+        1号元素：一个字符串，表示从输入state的坐标到0号元素坐标的方向值（详情参考game.py中的Directions类)
+        2号元素：一个int，表示从输入state的坐标到0号元素坐标的方向值（实验中似乎默认为1）
+      注：未测试当输入坐标为墙时该函数的行为，详情可参考searchAgent.py中的源码
+    problem.getCostOfActions(actions) （*** 对该函数的说明有猜测成分，说明仅供参考 ***）
+      参数：一个列表actions，元素为一个表示方向值的字符串，与problem.getSuccessors返回值的1号元素类型相同
+      返回值：一个int，表示代价
+      注：action为None，或有穿墙行为时，返回999999
+
+*** 所 编 写 函 数（如def breadthFirstSearch(problem):）的 返 回 值 ***
+一个列表，元素为一个表示方向值的字符串，与problem.getSuccessors返回值的1号元素类型相同
+每个方向值代表朝所指方向走一格，若要沿方向X走n格，则需要将X重复n次。
