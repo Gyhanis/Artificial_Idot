@@ -25,3 +25,5 @@
 *** 所 编 写 函 数（如def breadthFirstSearch(problem):）的 返 回 值 ***
 一个列表，元素为一个表示方向值的字符串，与problem.getSuccessors返回值的1号元素类型相同
 每个方向值代表朝所指方向走一格，若要沿方向X走n格，则需要将X重复n次。
+
+util.py中提供了栈和队列，及优先队列，调用方法比较简单，不做介绍。
