@@ -19,6 +19,7 @@ Pacman agents (in searchAgents.py).
 
 import util
 from util import Stack
+from util import Queue
 
 class SearchProblem:
     """
@@ -82,7 +83,7 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-    
+
     print "Start:", problem.getStartState()
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
@@ -92,9 +93,8 @@ def depthFirstSearch(problem):
     closeList = [curPos]
     stack = Stack()
     successors = problem.getSuccessors(curPos)
-    step = 0
     for successor in successors:
-        stack.push(successor[0:2]+(step,))
+        stack.push((successor[0],[successor[1]]))
         closeList.append(successor[0])
     if 0:
         curPos,action,step = stack.pop()
@@ -114,23 +114,33 @@ def depthFirstSearch(problem):
         while not problem.isGoalState(curPos):
             if stack.isEmpty():
                 return []
-            curPos,action,step = stack.pop()
-            if step == len(ActionList):
-                ActionList.append(action)
-            else:
-                ActionList = ActionList[0:step] + [action]
-            step += 1
+            curPos,ActionList = stack.pop()
             successors = problem.getSuccessors(curPos)
             for successor in successors:
                 if successor[0] not in closeList:
-                    stack.push(successor[0:2]+(step,))
+                    stack.push((successor[0],ActionList+[successor[1]]))
                     closeList.append(successor[0])
     return ActionList
 
 def breadthFirstSearch(problem):
-    """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    curPos = problem.getStartState()
+    ActionList = []
+    closeList = [curPos]
+    queue = Queue()
+    successors = problem.getSuccessors(curPos)
+    for successor in successors:
+        queue.push((successor[0],[successor[1]]))
+        closeList.append(successor[0])
+    while not problem.isGoalState(curPos):
+        if queue.isEmpty():
+            return []
+        curPos,ActionList = queue.pop()
+        successors = problem.getSuccessors(curPos)
+        for successor in successors:
+            if successor[0] not in closeList:
+                queue.push((successor[0],ActionList+[successor[1]]))
+                closeList.append(successor[0])
+    return ActionList
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
