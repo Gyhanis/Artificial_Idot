@@ -20,6 +20,7 @@ Pacman agents (in searchAgents.py).
 import util
 from util import Stack
 from util import Queue
+from util import PriorityQueueWithFunction
 
 class SearchProblem:
     """
@@ -74,6 +75,25 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
+def universeSearch(depot,problem):
+    curPos = problem.getStartState()
+    ActionList = []
+    closeList = [curPos]
+    successors = problem.getSuccessors(curPos)
+    for successor in successors:
+        depot.push((successor[0],[successor[1]]))
+        closeList.append(successor[0])
+    while not problem.isGoalState(curPos):
+        if depot.isEmpty():
+            return []
+        curPos,ActionList = depot.pop()
+        successors = problem.getSuccessors(curPos)
+        for successor in successors:
+            if successor[0] not in closeList:
+                depot.push((successor[0],ActionList+[successor[1]]))
+                closeList.append(successor[0])
+    return ActionList
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -88,64 +108,35 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    curPos = problem.getStartState()
-    ActionList = []
-    closeList = [curPos]
     stack = Stack()
-    successors = problem.getSuccessors(curPos)
-    for successor in successors:
-        stack.push((successor[0],[successor[1]]))
-        closeList.append(successor[0])
-    if 0:
-        curPos,action,step = stack.pop()
-        step += 1
-        ActionList.append(action)
-        if curPos not in closeList:
-            pass
-        curPos,action,step = stack.pop()
-        ActionList.append(action)
-        print ActionList[0:0]
-        ActionList = ActionList + [action]
-        print ActionList.pop()
-        print ActionList.pop()
-        print len(ActionList)
-        print "closeList:",closeList
-    else:
-        while not problem.isGoalState(curPos):
-            if stack.isEmpty():
-                return []
-            curPos,ActionList = stack.pop()
-            successors = problem.getSuccessors(curPos)
-            for successor in successors:
-                if successor[0] not in closeList:
-                    stack.push((successor[0],ActionList+[successor[1]]))
-                    closeList.append(successor[0])
-    return ActionList
+    return universeSearch(stack,problem)
 
 def breadthFirstSearch(problem):
-    curPos = problem.getStartState()
-    ActionList = []
-    closeList = [curPos]
     queue = Queue()
-    successors = problem.getSuccessors(curPos)
-    for successor in successors:
-        queue.push((successor[0],[successor[1]]))
-        closeList.append(successor[0])
-    while not problem.isGoalState(curPos):
-        if queue.isEmpty():
-            return []
-        curPos,ActionList = queue.pop()
-        successors = problem.getSuccessors(curPos)
-        for successor in successors:
-            if successor[0] not in closeList:
-                queue.push((successor[0],ActionList+[successor[1]]))
-                closeList.append(successor[0])
-    return ActionList
+    return universeSearch(queue,problem)
+
+import sys
+class CostClass:
+    problem = None
+    @staticmethod
+    def getCost((pos,ActionList)):
+        if CostClass.problem == None:
+            print "Error"
+            sys.exit(1)
+        return CostClass.problem.getCostOfActions(ActionList)
+    @staticmethod
+    def getCostAstar((pos,ActionList)):
+        if CostClass.problem == None:
+            print "Error"
+            sys.exit(1)
+        cost = CostClass.problem.getCostOfActions(ActionList)
+        hCost = abs(CostClass.problem.goal[0] - pos[0]) + abs(CostClass.problem.goal[1] - pos[1])
+        return cost + hCost
 
 def uniformCostSearch(problem):
-    """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    CostClass.problem = problem
+    queue = PriorityQueueWithFunction(CostClass.getCost)
+    return universeSearch(queue,problem)
 
 def nullHeuristic(state, problem=None):
     """
@@ -155,9 +146,9 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    CostClass.problem = problem
+    queue = PriorityQueueWithFunction(CostClass.getCostAstar)
+    return universeSearch(queue,problem)
 
 
 # Abbreviations
