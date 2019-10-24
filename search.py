@@ -75,7 +75,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s, s, w, s, w, w, s, w]
 
-def universeSearch(depot,problem):
+def universeSearch(depot,problem): 
     curPos = problem.getStartState()
     ActionList = []
     closeList = [curPos]
@@ -83,12 +83,20 @@ def universeSearch(depot,problem):
     for successor in successors:
         depot.push((successor[0],[successor[1]]))
         closeList.append(successor[0])
+        if problem.isGoalState(successor[0]):
+            curPos=successor[0]
+            ActionList = ActionList + [successor[1]]
+            break
     while not problem.isGoalState(curPos):
         if depot.isEmpty():
             return []
         curPos,ActionList = depot.pop()
         successors = problem.getSuccessors(curPos)
         for successor in successors:
+            if problem.isGoalState(successor[0]):
+                curPos=successor[0]
+                ActionList = ActionList + [successor[1]]
+                break
             if successor[0] not in closeList:
                 depot.push((successor[0],ActionList+[successor[1]]))
                 closeList.append(successor[0])
