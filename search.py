@@ -78,29 +78,19 @@ def tinyMazeSearch(problem):
 def universeSearch(depot,problem): 
     curPos = problem.getStartState()
     ActionList = []
-    closeList = [curPos]
-    successors = problem.getSuccessors(curPos)
-    for successor in successors:
-        depot.push((successor[0],[successor[1]]))
-        closeList.append(successor[0])
-        if problem.isGoalState(successor[0]):
-            curPos=successor[0]
-            ActionList = ActionList + [successor[1]]
-            break
-    while not problem.isGoalState(curPos):
-        if depot.isEmpty():
-            return []
+    closeList = []
+    depot.push((curPos,[]))
+    while not depot.isEmpty():
         curPos,ActionList = depot.pop()
-        successors = problem.getSuccessors(curPos)
-        for successor in successors:
-            if problem.isGoalState(successor[0]):
-                curPos=successor[0]
-                ActionList = ActionList + [successor[1]]
-                break
-            if successor[0] not in closeList:
-                depot.push((successor[0],ActionList+[successor[1]]))
-                closeList.append(successor[0])
-    return ActionList
+        if problem.isGoalState(curPos):
+            return ActionList
+        if curPos not in closeList:
+            closeList.append(curPos)
+            successors = problem.getSuccessors(curPos)
+            for successor in successors:
+                if successor[0] not in closeList:
+                    depot.push((successor[0],ActionList+[successor[1]]))
+    return []
 
 def depthFirstSearch(problem):
     """
@@ -123,27 +113,10 @@ def breadthFirstSearch(problem):
     queue = Queue()
     return universeSearch(queue,problem)
 
-import sys
-class CostClass:
-    problem = None
-    @staticmethod
-    def getCost((pos,ActionList)):
-        if CostClass.problem == None:
-            print "Error"
-            sys.exit(1)
-        return CostClass.problem.getCostOfActions(ActionList)
-    @staticmethod
-    def getCostAstar((pos,ActionList)):
-        if CostClass.problem == None:
-            print "Error"
-            sys.exit(1)
-        cost = CostClass.problem.getCostOfActions(ActionList)
-        hCost = abs(CostClass.problem.goal[0] - pos[0]) + abs(CostClass.problem.goal[1] - pos[1])
-        return cost + hCost
-
 def uniformCostSearch(problem):
-    CostClass.problem = problem
-    queue = PriorityQueueWithFunction(CostClass.getCost)
+    def getCost((pos,ActionList)):
+        return problem.getCostOfActions(ActionList)
+    queue = PriorityQueueWithFunction(getCost)
     return universeSearch(queue,problem)
 
 def nullHeuristic(state, problem=None):
@@ -154,8 +127,11 @@ def nullHeuristic(state, problem=None):
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
-    CostClass.problem = problem
-    queue = PriorityQueueWithFunction(CostClass.getCostAstar)
+    def getCostAstar((pos,ActionList)):
+        cost = problem.getCostOfActions(ActionList)
+        hCost = heuristic(pos,problem)
+        return cost + hCost
+    queue = PriorityQueueWithFunction(getCostAstar)
     return universeSearch(queue,problem)
 
 
