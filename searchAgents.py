@@ -301,7 +301,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.c2c = [[0] * 4] * 4
+        self.c2c = [[0 for i in range(4)] for j in range(4)]
         for i in range(4):
             for j in range(i):
                 self.c2c[i][j] = self.c2c[j][i] = manhattanDistance(self.corners[i], self.corners[j])
@@ -350,11 +350,12 @@ class CornersProblem(search.SearchProblem):
                 continue
             next_visited = []
             for i in range(len(visited)):
-                next_visited.append(visited[i] or (pos == self.corners[i]))
+                next_visited.append(visited[i] or ((nextx, nexty) == self.corners[i]))
             if next_visited != visited:
-                print('cornor found')
+                # print('cornor found')
+                pass
             "*** YOUR CODE HERE ***"
-            successors.append([[(nextx, nexty), next_visited], action])
+            successors.append([[(nextx, nexty), next_visited], action, 1])
 
         self._expanded += 1  # DO NOT CHANGE
         return successors
@@ -388,30 +389,6 @@ def cornersHeuristic(state, problem):
     """
     "*** YOUR CODE HERE ***"
     "in the comment the simplest version"
-    # from util import manhattanDistance
-    # corners = problem.corners  # These are the corner coordinates
-    # walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
-    # pos, visited = state
-    # x, y = pos
-    # if walls[x][y]: return 999999
-    # unvisited_corners = [corners[i] for i in range(len(visited)) if not visited[i]]
-    # len_uc = len(unvisited_corners)
-    # if len_uc == 0:
-    #     return 0
-    # uc2uc = [[0] * len_uc] * len_uc
-    # cur2uc = [0] * len_uc
-    #
-    # # for i in range(len_uc):
-    # #     cur2uc[i] = manhattanDistance(pos, unvisited_corners[i])
-    # #     uc2uc[i][i] = 0
-    # #     for j in range(i):
-    # #         uc2uc[i][j] = uc2uc[j][i] = manhattanDistance(unvisited_corners[i], unvisited_corners[j])
-    #
-    # # the longest distance to go
-    # for i in range(len_uc):
-    #     cur2uc[i] = manhattanDistance(pos, unvisited_corners[i])
-    #
-    # return max(cur2uc)
     "here should reduce the search space"
     from util import manhattanDistance
     corners = problem.corners  # These are the corner coordinates
@@ -431,9 +408,9 @@ def cornersHeuristic(state, problem):
     perm_cornerlist = perm(unvisited_corners)
 
     for cornerlist in perm_cornerlist:
-        temp_dist = cur2c[unvisited_corners[0]]
+        temp_dist = cur2c[cornerlist[0]]
         for i in range(len(cornerlist) - 1):
-            temp_dist = temp_dist + c2c[unvisited_corners[i]][unvisited_corners[i+1]]
+            temp_dist = temp_dist + c2c[cornerlist[i]][cornerlist[i + 1]]
         min_dist = min(min_dist, temp_dist)
 
     return min_dist
