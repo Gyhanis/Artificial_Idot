@@ -530,20 +530,20 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    ## Version 1.0
-    position, foodGrid = state
-    walls = problem.getWalls()
-    x, y = position
-    if walls[x][y] == True:
-        return 999999
-    foodlist = foodGrid.asList()
-    if not foodlist:
-        return 0
-    mindist = 999999
-    for food in foodlist:
-        mindist = min(mindist, manhattanDistance(position, food)-1)
-    heur = len(foodGrid.asList()) + mindist
-    return heur
+    # ## Version 1.0
+    # position, foodGrid = state
+    # walls = problem.getWalls()
+    # x, y = position
+    # if walls[x][y] == True:
+    #     return 999999
+    # foodlist = foodGrid.asList()
+    # if not foodlist:
+    #     return 0
+    # mindist = 999999
+    # for food in foodlist:
+    #     mindist = min(mindist, manhattanDistance(position, food)-1)
+    # heur = len(foodGrid.asList()) + mindist
+    # return heur
 
     # ## Version 3.0
     # position, foodGrid = state
@@ -560,28 +560,28 @@ def foodHeuristic(state, problem):
     # heur = maxdist
     # return heur
 
-    # ## Version 4.0
-    # position, foodGrid = state
-    # walls = problem.getWalls()
-    # x, y = position
-    # if walls[x][y] == True:
-    #     return 999999
-    # foodlist = foodGrid.asList()
-    # if not foodlist:
-    #     return 0
-    # mindist = 999999
-    # maxdist = 0
-    # totaldist = 0
-    # for food in foodlist:
-    #     curdist = mazeDistance(position, food, problem.getStartingGameState())
-    #     totaldist += curdist
-    #     if curdist > maxdist:
-    #         maxdist = curdist
-    #     if curdist < mindist:
-    #         mindist = curdist
-    # avedist = totaldist/len(foodlist)
-    # heur = max(mindist+len(foodlist)-1, avedist+len(foodlist)/2, maxdist)
-    # return heur
+    ## Version 4.0
+    position, foodGrid = state
+    walls = problem.getWalls()
+    x, y = position
+    if walls[x][y] == True:
+        return 999999
+    foodlist = foodGrid.asList()
+    if not foodlist:
+        return 0
+    mindist = 999999
+    maxdist = 0
+    totaldist = 0
+    for food in foodlist:
+        curdist = mazeDistance(position, food, problem.getStartingGameState())
+        totaldist += curdist
+        if curdist > maxdist:
+            maxdist = curdist
+        if curdist < mindist:
+            mindist = curdist
+    avedist = totaldist/len(foodlist)
+    heur = max(mindist+len(foodlist)-1, avedist+len(foodlist)/2, maxdist)
+    return heur
 
 
 class ClosestDotSearchAgent(SearchAgent):
