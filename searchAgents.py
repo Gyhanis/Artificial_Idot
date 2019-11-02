@@ -43,7 +43,7 @@ from game import Agent
 from game import Directions
 from util import manhattanDistance
 
-
+from itertools import permutations
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
 
@@ -390,7 +390,8 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    "*** YOUR CODE HERE ***"
+    # "*** YOUR CODE HERE ***"
+    # Approach 4 and Approach 3
     "in the comment the simplest version"
     "here should reduce the search space"
     corners = problem.corners  # These are the corner coordinates
@@ -403,23 +404,46 @@ def cornersHeuristic(state, problem):
     c2c = problem.c2c
     cur2c = [0, 0, 0, 0]
     # use shortCutMemory to reduce calculation
+    #----part for approach 3----
+    # for i in range(4):
+    #     # shortCutMemory is the memory pool to store searched distance between points, to reduce future calculation
+    #     if not visited[i]:
+    #         if (pos, problem.corners[i]) in problem.shortCutMemory.keys():
+    #             cur2c[i] = problem.shortCutMemory[(pos, problem.corners[i])]
+    #             # pos->corner is good enough, no need for corner->pos,
+    #             # for searching order is fixed(only possible when corner -> pos)
+    #         else:
+    #             dist = mazeDistance(pos, problem.corners[i], problem.gameState)
+    #             problem.shortCutMemory[(pos, problem.corners[i])] = dist
+    #             cur2c[i] = dist
+    # ----part for approach 3 ends here----
+    # ----part for approach 4----
     for i in range(4):
-        # shortCutMemory is the memory pool to store searched distance between points, to reduce future calculation
         if not visited[i]:
-            if (pos, problem.corners[i]) in problem.shortCutMemory.keys():
-                cur2c[i] = problem.shortCutMemory[(pos, problem.corners[i])]
-                # pos->corner is good enough, no need for corner->pos,
-                # for searching order is fixed(only possible when corner -> pos)
-            else:
-                dist = mazeDistance(pos, problem.corners[i], problem.gameState)
-                problem.shortCutMemory[(pos, problem.corners[i])] = dist
-                cur2c[i] = dist
+            cur2c[i] = manhattanDistance(pos,problem.corners[i])
+    # ----part for approach 4 ends here----
+    # ----part for approach 5----
+    # for i in range(4):
+    #     if not visited[i]:
+    #         cur2c[i] = mazeDistance(pos,problem.corners[i],problem.gameState)
+    # ----part for approach 5 ends here----
+
     if len_uc == 0:
         return 0
+    # ----part for approach 4----
+    if len_uc == 1:
+        unvisited_corner = corners[unvisited_corners[0]]
+        return mazeDistance(pos, unvisited_corner, problem.gameState)
+    # ----part for approach 4 ends here----
+
+    # ----part for approach 5----
     # if len_uc == 1:
-    #     return cur2c[unvisited_corners[0]] #return manhattan dist
+    #     unvisited_corner = corners[unvisited_corners[0]]
+    #     return manhattanDistance(pos, unvisited_corner)
+    # ----part for approach 5 ends here----
+
     min_dist = 9999999
-    perm_cornerlist = perm(unvisited_corners)
+    perm_cornerlist = permutations(unvisited_corners)
 
     for cornerlist in perm_cornerlist:
         temp_dist = cur2c[cornerlist[0]]
@@ -430,16 +454,23 @@ def cornersHeuristic(state, problem):
     return min_dist
 
 
-def perm(data):
-    if len(data) == 1:
-        return [data]
-    r = []
-    for i in range(len(data)):
-        s = data[:i] + data[i + 1:]
-        p = perm(s)
-        for x in p:
-            r.append(data[i:i + 1] + x)
-    return r
+    # Approach 0
+    # return 0
+
+
+    # Approach 1
+    # corners = problem.corners  # These are the corner coordinates
+    # walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
+    # pos, visited = state
+    # x, y = pos
+    # if walls[x][y]: return 999999
+    # unvisited_corners = [i for i in range(len(visited)) if not visited[i]]
+    # temp_dist = -1
+    # if len(unvisited_corners)==0:
+    #     return 0
+    # for c in unvisited_corners:
+    #     temp_dist = max(temp_dist,manhattanDistance(pos,corners[i]))
+    # return temp_dist
 
 
 class AStarCornersAgent(SearchAgent):
