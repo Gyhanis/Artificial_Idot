@@ -301,10 +301,13 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        # for corners Heuristic problem
         self.c2c = [[0 for i in range(4)] for j in range(4)]
+        self.gameState = startingGameState
+        self.shortCutMemory = {}
         for i in range(4):
             for j in range(i):
-                self.c2c[i][j] = self.c2c[j][i] = manhattanDistance(self.corners[i], self.corners[j])
+                self.c2c[i][j] = self.c2c[j][i] = mazeDistance(self.corners[i], self.corners[j], startingGameState)
 
     def getStartState(self):
         """
@@ -390,7 +393,6 @@ def cornersHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
     "in the comment the simplest version"
     "here should reduce the search space"
-    from util import manhattanDistance
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
     pos, visited = state
@@ -399,7 +401,19 @@ def cornersHeuristic(state, problem):
     unvisited_corners = [i for i in range(len(visited)) if not visited[i]]
     len_uc = len(unvisited_corners)
     c2c = problem.c2c
-    cur2c = [manhattanDistance(pos, problem.corners[i]) for i in range(4)]
+    cur2c = [0, 0, 0, 0]
+    # use shortCutMemory to reduce calculation
+    for i in range(4):
+        # shortCutMemory is the memory pool to store searched distance between points, to reduce future calculation
+        if not visited[i]:
+            if (pos, problem.corners[i]) in problem.shortCutMemory.keys():
+                cur2c[i] = problem.shortCutMemory[(pos, problem.corners[i])]
+                # pos->corner is good enough, no need for corner->pos,
+                # for searching order is fixed(only possible when corner -> pos)
+            else:
+                dist = mazeDistance(pos, problem.corners[i], problem.gameState)
+                problem.shortCutMemory[(pos, problem.corners[i])] = dist
+                cur2c[i] = dist
     if len_uc == 0:
         return 0
     # if len_uc == 1:
